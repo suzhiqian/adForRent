@@ -189,9 +189,9 @@
             <h3>🗺️ 地图导航</h3>
             <div class="navigation-controls">
                 <h4>导航到此地址</h4>
-                <input type="text" id="start-address" class="nav-input" placeholder="请输入起点地址">
+                <!-- <input type="text" id="start-address" class="nav-input" placeholder="请输入起点地址">
                 <button class="nav-button" onclick="navigateTo()">导航</button>
-                <br>
+                <br> -->
                 <button class="current-location-btn" onclick="navigateFromCurrent()">从当前位置导航</button>
                 <button class="current-location-btn" onclick="openNavigationApp()" style="background: #9c27b0; margin-left: 10px;">使用地图APP导航</button>
             </div>
@@ -204,7 +204,7 @@
     <script>
         var map;
         var targetPoint;
-        var targetAddress = "同安区洪塘镇洪塘村埔下里109号";
+        var targetAddress = "同安区洪塘镇洪塘埔下里109号";
         
         // 初始化地图
         function initMap() {
@@ -213,26 +213,19 @@
             
             // 创建地址解析器实例
             var myGeo = new BMap.Geocoder();
-            
+            targetPoint = new BMap.Point(118.2007829772553, 24.71778426835497);
             // 将地址解析结果显示在地图上，并调整地图视野
-            myGeo.getPoint(targetAddress, function(point){
-                if (point) {
-                    targetPoint = point;
-                    map.centerAndZoom(point, 16);
-                    map.addOverlay(new BMap.Marker(point));
-                    
-                    // 添加信息窗口
-                    var opts = {
-                        width : 200,
-                        height: 80,
-                        title : "房源位置"
-                    };
-                    var infoWindow = new BMap.InfoWindow(targetAddress, opts);
-                    map.openInfoWindow(infoWindow, point);
-                } else {
-                    alert("无法找到该地址");
-                }
-            }, "厦门市");
+            map.centerAndZoom(targetPoint, 20);
+            map.addOverlay(new BMap.Marker(targetPoint));
+            
+            // 添加信息窗口
+            var opts = {
+                width : 200,
+                height: 80,
+                title : "房源位置"
+            };
+            var infoWindow = new BMap.InfoWindow(targetAddress, opts);
+            map.openInfoWindow(infoWindow, targetPoint);
         }
         
         // 导航到指定地址

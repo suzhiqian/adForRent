@@ -193,6 +193,7 @@
                 <button class="nav-button" onclick="navigateTo()">导航</button>
                 <br>
                 <button class="current-location-btn" onclick="navigateFromCurrent()">从当前位置导航</button>
+                <button class="current-location-btn" onclick="openNavigationApp()" style="background: #9c27b0; margin-left: 10px;">使用地图APP导航</button>
             </div>
             <div id="map"></div>
         </div>
@@ -203,20 +204,18 @@
     <script>
         var map;
         var targetPoint;
+        var targetAddress = "同安区洪塘镇洪塘村埔下里109号";
         
         // 初始化地图
         function initMap() {
             // 创建地图实例
             map = new BMap.Map("map");
             
-            // 设置搜索地址
-            var address = "同安区洪塘镇洪塘村埔下里109号";
-            
             // 创建地址解析器实例
             var myGeo = new BMap.Geocoder();
             
             // 将地址解析结果显示在地图上，并调整地图视野
-            myGeo.getPoint(address, function(point){
+            myGeo.getPoint(targetAddress, function(point){
                 if (point) {
                     targetPoint = point;
                     map.centerAndZoom(point, 16);
@@ -228,7 +227,7 @@
                         height: 80,
                         title : "房源位置"
                     };
-                    var infoWindow = new BMap.InfoWindow("同安区洪塘镇洪塘村埔下里109号", opts);
+                    var infoWindow = new BMap.InfoWindow(targetAddress, opts);
                     map.openInfoWindow(infoWindow, point);
                 } else {
                     alert("无法找到该地址");
@@ -313,6 +312,34 @@
                 });
             } else {
                 alert("浏览器不支持地理位置服务");
+            }
+        }
+        
+        // 直接调起地图APP进行导航
+        function openNavigationApp() {
+            if (!targetPoint) {
+                alert('目标地址解析中，请稍后再试');
+                return;
+            }
+            
+            // 检查是否为移动端
+            var isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 尝试调起手机地图APP
+                if (/Android/i.test(navigator.userAgent)) {
+                    // Android设备使用百度地图APP导航
+                    window.open(`bdapp://map/direction?destination=name:${encodeURIComponent(targetAddress)}|latlng:${targetPoint.lat},${targetPoint.lng}&mode=driving`, '_system');
+                } else if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                    // iOS设备使用苹果地图导航
+                    window.open(`http://maps.apple.com/?daddr=${targetPoint.lat},${targetPoint.lng}`, '_system');
+                } else {
+                    // 其他设备尝试通用方案
+                    window.open(`https://map.baidu.com/mobile/webapp/search/search/qt=nav&wd=${encodeURIComponent(targetAddress)}/results`, '_blank');
+                }
+            } else {
+                alert('此功能在移动设备上效果最佳，将打开网页版地图进行导航');
+                window.open(`https://map.baidu.com/search/${encodeURIComponent(targetAddress)}`, '_blank');
             }
         }
         

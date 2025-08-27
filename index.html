@@ -6,48 +6,153 @@
     <title>招租广告</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            box-sizing: border-box;
         }
         .container {
-            max-width: 600px;
+            max-width: 800px;
             margin: auto;
             background: white;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
         h1 {
             text-align: center;
             color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
         }
         .ad {
-            margin: 20px 0;
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .ad h2 {
+            color: #444;
+            margin-top: 0;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+        }
+        .ad p {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 12px 0;
         }
         .contact {
             text-align: center;
-            margin-top: 30px;
+            margin: 40px 0;
+            padding: 20px;
+            background: #e3f2fd;
+            border-radius: 10px;
+        }
+        .contact h3 {
+            color: #1976d2;
+            margin-top: 0;
+        }
+        .phone-number {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #d32f2f;
+            margin: 10px 0;
+        }
+        .map {
+            margin: 30px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+        .map h3 {
+            color: #444;
+            margin-top: 0;
+        }
+        #map {
+            width: 100%;
+            height: 400px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+            #map {
+                height: 300px;
+            }
+            h1 {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>招租广告</h1>
+        <h1>🏠 招租广告</h1>
         <div class="ad">
-            <h2>房源信息</h2>
-            <p>地点：北京市朝阳区</p>
-            <p>面积：80平方米</p>
-            <p>租金：5000元/月</p>
-            <p>房型：两室一厅</p>
-            <p>配套设施：空调、热水器、冰箱、洗衣机</p>
+            <h2>📍 房源信息</h2>
+            <p><strong>地点：</strong>同安区洪塘镇洪塘村埔下里109号</p>
+            <p><strong>房型：</strong>单人套间</p>
+            <p><strong>面积：</strong>20-30平方米左右</p>
+            <p><strong>租金：</strong>500-700元/月</p>
+            <p><strong>房间数量：</strong>7间</p>
+            <p><strong>配套设施：</strong>空调、热水器、床</p>
         </div>
         <div class="contact">
-            <h3>联系方式</h3>
-            <p>电话：123-4567-8901</p>
-            <p>邮箱：example@example.com</p>
+            <h3>📞 联系方式</h3>
+            <p class="phone-number">18559306493</p>
+            <p>或</p>
+            <p class="phone-number">15080330786</p>
+        </div>
+        <div class="map">
+            <h3>🗺️ 地图导航</h3>
+            <div id="map"></div>
         </div>
     </div>
+
+    <!-- 引入百度地图API -->
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=CB1DzOILHnMq3fuDbwg4oNpkeG7qcipm"></script>
+    <script>
+        // 初始化地图
+        function initMap() {
+            // 创建地图实例
+            var map = new BMap.Map("map");
+            
+            // 设置搜索地址
+            var address = "同安区洪塘镇洪塘村埔下里109号";
+            
+            // 创建地址解析器实例
+            var myGeo = new BMap.Geocoder();
+            
+            // 将地址解析结果显示在地图上，并调整地图视野
+            myGeo.getPoint(address, function(point){
+                if (point) {
+                    map.centerAndZoom(point, 16);
+                    map.addOverlay(new BMap.Marker(point));
+                    
+                    // 添加信息窗口
+                    var opts = {
+                        width : 250,
+                        height: 100,
+                        title : "房源位置"
+                    };
+                    var infoWindow = new BMap.InfoWindow("同安区洪塘镇洪塘村埔下里109号", opts);
+                    map.openInfoWindow(infoWindow, point);
+                } else {
+                    alert("无法找到该地址");
+                }
+            }, "厦门市");
+        }
+        
+        // 页面加载完成后初始化地图
+        window.onload = initMap;
+    </script>
 </body>
-</html></div>
+</html>

@@ -8,7 +8,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             box-sizing: border-box;
@@ -17,21 +17,21 @@
             max-width: 800px;
             margin: auto;
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 30px;
-            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-size: 2em;
             border-bottom: 3px solid #667eea;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
         .ad {
-            margin: 25px 0;
-            padding: 20px;
+            margin: 20px 0;
+            padding: 15px;
             background: #f8f9fa;
             border-radius: 10px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
@@ -40,17 +40,17 @@
             color: #444;
             margin-top: 0;
             border-left: 5px solid #667eea;
-            padding-left: 15px;
+            padding-left: 10px;
         }
         .ad p {
-            font-size: 1.1em;
+            font-size: 1em;
             line-height: 1.6;
-            margin: 12px 0;
+            margin: 10px 0;
         }
         .contact {
             text-align: center;
-            margin: 40px 0;
-            padding: 20px;
+            margin: 30px 0;
+            padding: 15px;
             background: #e3f2fd;
             border-radius: 10px;
         }
@@ -59,14 +59,14 @@
             margin-top: 0;
         }
         .phone-number {
-            font-size: 1.4em;
+            font-size: 1.2em;
             font-weight: bold;
             color: #d32f2f;
-            margin: 10px 0;
+            margin: 8px 0;
         }
         .map {
-            margin: 30px 0;
-            padding: 20px;
+            margin: 20px 0;
+            padding: 15px;
             background: #fafafa;
             border-radius: 10px;
         }
@@ -76,26 +76,100 @@
         }
         #map {
             width: 100%;
-            height: 400px;
+            height: 300px;
             border-radius: 8px;
             border: 1px solid #ddd;
         }
+        .navigation-controls {
+            margin: 15px 0;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 8px;
+        }
+        .navigation-controls h4 {
+            margin-top: 0;
+            color: #2e7d32;
+        }
+        .nav-input {
+            width: 70%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 5px;
+        }
+        .nav-button {
+            padding: 8px 12px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .nav-button:hover {
+            background: #45a049;
+        }
+        .current-location-btn {
+            padding: 8px 12px;
+            background: #2196f3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+        .current-location-btn:hover {
+            background: #1976d2;
+        }
         @media (max-width: 600px) {
             .container {
-                padding: 15px;
+                padding: 10px;
+                border-radius: 10px;
             }
             #map {
-                height: 300px;
+                height: 250px;
             }
             h1 {
-                font-size: 2em;
+                font-size: 1.8em;
+                margin-bottom: 15px;
+            }
+            .ad, .contact, .map {
+                padding: 12px;
+                margin: 15px 0;
+            }
+            .ad p {
+                font-size: 0.95em;
+            }
+            .phone-number {
+                font-size: 1.1em;
+            }
+            .nav-input {
+                width: 60%;
+                margin-bottom: 8px;
+            }
+        }
+        @media (max-width: 400px) {
+            body {
+                padding: 5px;
+            }
+            .container {
+                padding: 8px;
+            }
+            #map {
+                height: 200px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .nav-input {
+                width: 100%;
+                margin-bottom: 8px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏠 招租广告</h1>
+        <h1>🏠 房子招租</h1>
         <div class="ad">
             <h2>📍 房源信息</h2>
             <p><strong>地点：</strong>同安区洪塘镇洪塘村埔下里109号</p>
@@ -113,6 +187,13 @@
         </div>
         <div class="map">
             <h3>🗺️ 地图导航</h3>
+            <div class="navigation-controls">
+                <h4>导航到此地址</h4>
+                <input type="text" id="start-address" class="nav-input" placeholder="请输入起点地址">
+                <button class="nav-button" onclick="navigateTo()">导航</button>
+                <br>
+                <button class="current-location-btn" onclick="navigateFromCurrent()">从当前位置导航</button>
+            </div>
             <div id="map"></div>
         </div>
     </div>
@@ -120,10 +201,13 @@
     <!-- 引入百度地图API -->
     <script type="text/javascript" src="https://api.map.baidu.com/api?v=3.0&ak=CB1DzOILHnMq3fuDbwg4oNpkeG7qcipm"></script>
     <script>
+        var map;
+        var targetPoint;
+        
         // 初始化地图
         function initMap() {
             // 创建地图实例
-            var map = new BMap.Map("map");
+            map = new BMap.Map("map");
             
             // 设置搜索地址
             var address = "同安区洪塘镇洪塘村埔下里109号";
@@ -134,13 +218,14 @@
             // 将地址解析结果显示在地图上，并调整地图视野
             myGeo.getPoint(address, function(point){
                 if (point) {
+                    targetPoint = point;
                     map.centerAndZoom(point, 16);
                     map.addOverlay(new BMap.Marker(point));
                     
                     // 添加信息窗口
                     var opts = {
-                        width : 250,
-                        height: 100,
+                        width : 200,
+                        height: 80,
                         title : "房源位置"
                     };
                     var infoWindow = new BMap.InfoWindow("同安区洪塘镇洪塘村埔下里109号", opts);
@@ -149,6 +234,86 @@
                     alert("无法找到该地址");
                 }
             }, "厦门市");
+        }
+        
+        // 导航到指定地址
+        function navigateTo() {
+            var startAddress = document.getElementById('start-address').value;
+            if (!startAddress) {
+                alert('请输入起点地址');
+                return;
+            }
+            
+            if (!targetPoint) {
+                alert('目标地址解析中，请稍后再试');
+                return;
+            }
+            
+            // 创建地址解析器实例
+            var myGeo = new BMap.Geocoder();
+            
+            // 解析起点地址
+            myGeo.getPoint(startAddress, function(startPoint){
+                if (startPoint) {
+                    // 创建导航对象
+                    var driving = new BMap.DrivingRoute(map, {
+                        renderOptions: {
+                            map: map,
+                            panel: "results",
+                            autoViewport: true
+                        }
+                    });
+                    
+                    // 发起导航请求
+                    driving.search(startPoint, targetPoint);
+                } else {
+                    alert("无法解析起点地址");
+                }
+            }, "厦门市");
+        }
+        
+        // 从当前位置导航
+        function navigateFromCurrent() {
+            if (!targetPoint) {
+                alert('目标地址解析中，请稍后再试');
+                return;
+            }
+            
+            // 检查浏览器是否支持地理位置
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var startPoint = new BMap.Point(position.coords.longitude, position.coords.latitude);
+                    
+                    // 创建导航对象
+                    var driving = new BMap.DrivingRoute(map, {
+                        renderOptions: {
+                            map: map,
+                            panel: "results",
+                            autoViewport: true
+                        }
+                    });
+                    
+                    // 发起导航请求
+                    driving.search(startPoint, targetPoint);
+                }, function(error) {
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            alert("用户拒绝了地理位置请求");
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            alert("位置信息不可用");
+                            break;
+                        case error.TIMEOUT:
+                            alert("请求超时");
+                            break;
+                        default:
+                            alert("获取位置时发生未知错误");
+                            break;
+                    }
+                });
+            } else {
+                alert("浏览器不支持地理位置服务");
+            }
         }
         
         // 页面加载完成后初始化地图
